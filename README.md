@@ -1,3 +1,3 @@
-# node-module-skeleton
+# srv4dev
 
-A skeleton to create TypeScript-based NodeJS modules
+A minimal http server for local development that integrates nodemon
