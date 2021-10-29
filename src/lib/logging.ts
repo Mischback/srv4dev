@@ -34,7 +34,7 @@ const debugLoggingConfiguration: ISettingsParam = {
  * @see ISettingsParam
  */
 const defaultLoggingConfiguration: ISettingsParam = {
-  name: "ImP",
+  name: "Srv4Dev",
   displayLoggerName: true,
   minLevel: "info",
   displayFunctionName: false,
