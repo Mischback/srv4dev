@@ -2,7 +2,11 @@
 
 import { Config } from "stdio/dist/getopt";
 
-import { cmdLineOptions } from "./lib/configure";
+import {
+  cmdLineOptions,
+  getConfig,
+  Srv4DevConfigureError,
+} from "./lib/configure";
 import {
   applyDebugConfiguration,
   logger,
@@ -11,6 +15,8 @@ import {
 
 /* *** INTERNAL CONSTANTS *** */
 const EXIT_SUCCESS = 0; // sysexits.h: 0 -> successful termination
+const EXIT_INTERNAL_ERROR = 70; // sysexits.h: 70 -> internal software error
+const EXIT_CONFIG_ERROR = 78; // sysexits.h: 78 -> configuration error
 const EXIT_SIGINT = 130; // bash scripting guide: 130 -> terminated by ctrl-c
 
 /* *** TYPE DEFINITIONS *** */
@@ -46,7 +52,26 @@ export function srv4devMain(argv: string[]): Promise<number> {
       applyDebugConfiguration();
     }
 
-    logger.debug(argv);
-    return resolve(EXIT_SUCCESS);
+    /* The actual payload starts here */
+    getConfig(argv)
+      .then((config) => {
+        logger.debug(config);
+        return resolve(EXIT_SUCCESS);
+      })
+      .catch((err) => {
+        /* handle "known" errors */
+        if (err instanceof Srv4DevConfigureError) {
+          logger.error(err.message);
+          logger.fatal("Could not determine configuration for ImP!");
+          return reject(EXIT_CONFIG_ERROR);
+        }
+
+        /* general error handler */
+        logger.error("Whoops, that was unexpected!");
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        logger.error(err.message);
+        logger.fatal("An unexpected error occured. Aborting!");
+        return reject(EXIT_INTERNAL_ERROR);
+      });
   });
 }
