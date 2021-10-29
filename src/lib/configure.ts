@@ -69,8 +69,17 @@ export function getConfig(argv: string[]): Promise<Srv4DevConfig> {
         new Srv4DevConfigureError("Could not parse command line parameters")
       );
 
-    logger.debug(cmdLineParams);
+    let tmpAddress: string;
+    if (cmdLineParams.address === false) {
+      tmpAddress = "127.0.0.1";
+      logger.info(`No address specified, using "${tmpAddress}"`);
+    } else {
+      tmpAddress = cmdLineParams.address as string;
+      logger.debug(`Address: "${tmpAddress}"`);
+    }
 
-    return resolve({} as Srv4DevConfig);
+    return resolve({
+      httpAddress: tmpAddress,
+    } as Srv4DevConfig);
   });
 }
