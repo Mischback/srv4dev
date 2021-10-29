@@ -78,8 +78,28 @@ export function getConfig(argv: string[]): Promise<Srv4DevConfig> {
       logger.debug(`Address: "${tmpAddress}"`);
     }
 
+    let tmpPort: number;
+    if (cmdLineParams.port === false) {
+      tmpPort = 8000;
+      logger.info(`No port specified, using "${tmpPort}"`);
+    } else {
+      try {
+        tmpPort = parseInt(cmdLineParams.port as string);
+      } catch (err) {
+        tmpPort = 8000;
+        logger.warn(
+          `Could not parse port as provided by command line: "${
+            cmdLineParams.port as string
+          }"`
+        );
+        logger.warn(`Using default port: "${tmpPort}"`);
+      }
+      logger.debug(`Port: "${tmpPort}"`);
+    }
+
     return resolve({
       httpAddress: tmpAddress,
+      httpPort: tmpPort,
     } as Srv4DevConfig);
   });
 }
