@@ -7,6 +7,7 @@ import {
   getConfig,
   Srv4DevConfigureError,
 } from "./lib/configure";
+import { launchHttpServer } from "./lib/http";
 import {
   applyDebugConfiguration,
   logger,
@@ -14,7 +15,7 @@ import {
 } from "./lib/logging";
 
 /* *** INTERNAL CONSTANTS *** */
-const EXIT_SUCCESS = 0; // sysexits.h: 0 -> successful termination
+// const EXIT_SUCCESS = 0; // sysexits.h: 0 -> successful termination
 const EXIT_INTERNAL_ERROR = 70; // sysexits.h: 70 -> internal software error
 const EXIT_CONFIG_ERROR = 78; // sysexits.h: 78 -> configuration error
 const EXIT_SIGINT = 130; // bash scripting guide: 130 -> terminated by ctrl-c
@@ -23,7 +24,7 @@ const EXIT_SIGINT = 130; // bash scripting guide: 130 -> terminated by ctrl-c
 type StdioConfigItem = Exclude<Config, boolean | undefined>;
 
 export function srv4devMain(argv: string[]): Promise<number> {
-  return new Promise((resolve, reject) => {
+  return new Promise((_resolve, reject) => {
     /* Setting up a handler for SIGINT (Ctrl-C)
      * This handler may be useful for cleaning up before terminating the script.
      * At least it will resolve to the "correct" exit code.
@@ -55,8 +56,7 @@ export function srv4devMain(argv: string[]): Promise<number> {
     /* The actual payload starts here */
     getConfig(argv)
       .then((config) => {
-        logger.debug(config);
-        return resolve(EXIT_SUCCESS);
+        return launchHttpServer(config);
       })
       .catch((err) => {
         /* handle "known" errors */
