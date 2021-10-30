@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 
-import { createServer, Server } from "http";
+import {
+  createServer,
+  IncomingMessage,
+  RequestListener,
+  Server,
+  ServerResponse,
+} from "http";
 
 import { Srv4DevConfig } from "./configure";
 import { Srv4DevError } from "./errors";
@@ -12,10 +18,28 @@ export class Srv4DevHttpError extends Srv4DevError {
   }
 }
 
+function getHandlerStaticFiles(webRoot: string): RequestListener {
+  return (
+    request: IncomingMessage,
+    response: ServerResponse
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      logger.debug(webRoot);
+      logger.debug(request);
+      logger.debug(response);
+
+      return resolve();
+    });
+  };
+}
+
 export function launchHttpServer(config: Srv4DevConfig): Promise<Server> {
   return new Promise((resolve, reject) => {
     try {
-      const server = createServer().listen(config.httpPort, config.httpAddress);
+      const server = createServer(getHandlerStaticFiles(config.webRoot)).listen(
+        config.httpPort,
+        config.httpAddress
+      );
       return resolve(server);
     } catch (err) {
       logger.debug(err);
