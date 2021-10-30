@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+import { createReadStream } from "fs";
 import { lstat } from "fs/promises";
 import {
   createServer,
@@ -8,7 +9,7 @@ import {
   Server,
   ServerResponse,
 } from "http";
-import { join } from "path";
+import { extname, join } from "path";
 
 import { Srv4DevConfig } from "./configure";
 import { Srv4DevError } from "./errors";
@@ -19,7 +20,28 @@ interface Srv4DevHttpResponse {
   resource: string;
 }
 
+const mimeTypes: { [id: string]: string } = {
+  ".html": "text/html",
+  ".js": "text/javascript",
+  ".css": "text/css",
+  ".json": "application/json",
+  ".gif": "image/gif",
+  ".jpeg": "image/jpg",
+  ".jpg": "image/jpg",
+  ".pdf": "application/pdf",
+  ".png": "image/png",
+  ".svg": "image/svg+xml",
+  ".tiff": "image/tiff",
+  ".webp": "image/webp",
+};
+
 export class Srv4DevHttpError extends Srv4DevError {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+class Srv4DevHttpFileError extends Srv4DevHttpError {
   constructor(message: string) {
     super(message);
   }
@@ -31,6 +53,37 @@ class Srv4DevHttpResourceNotFoundError extends Srv4DevHttpError {
     super(`Ressource not found: "${unavailableResource}"`);
     this.resource = unavailableResource;
   }
+}
+
+function createResponseOk(
+  response: ServerResponse,
+  resourcePath: string
+): Promise<Srv4DevHttpResponse> {
+  return new Promise((resolve, reject) => {
+    const mime = mimeTypes[extname(resourcePath)] || "application/octet-stream";
+
+    const fileStream = createReadStream(resourcePath);
+
+    fileStream.on("start", () => {
+      response.writeHead(200, { "Content-Type": mime });
+    });
+    fileStream.on("data", (chunk: any) => {
+      response.write(chunk);
+    });
+    fileStream.on("end", () => {
+      response.end();
+    });
+    fileStream.on("error", () => {
+      return reject(
+        new Srv4DevHttpFileError(`Error while reading "${resourcePath}"`)
+      );
+    });
+
+    return resolve({
+      status: 200,
+      resource: resourcePath,
+    } as Srv4DevHttpResponse);
+  });
 }
 
 function createResponseRessourceNotFound(
@@ -59,7 +112,7 @@ function getHandlerStaticFiles(webRoot: string): RequestListener {
       getResourcePathByUrl(webRoot, request.url)
         .then(
           (resourcePath) => {
-            logger.debug(resourcePath);
+            return createResponseOk(response, resourcePath);
           },
           (err) => {
             if (err instanceof Srv4DevHttpResourceNotFoundError)
