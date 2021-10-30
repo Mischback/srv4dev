@@ -14,18 +14,40 @@ import { Srv4DevConfig } from "./configure";
 import { Srv4DevError } from "./errors";
 import { logger } from "./logging";
 
+interface Srv4DevHttpResponse {
+  status: number;
+  resource: string;
+}
+
 export class Srv4DevHttpError extends Srv4DevError {
   constructor(message: string) {
     super(message);
   }
 }
 
-class Srv4DevHttpRessourceNotFoundError extends Srv4DevHttpError {
+class Srv4DevHttpResourceNotFoundError extends Srv4DevHttpError {
   resource: string;
   constructor(unavailableResource: string) {
     super(`Ressource not found: "${unavailableResource}"`);
     this.resource = unavailableResource;
   }
+}
+
+function createResponseRessourceNotFound(
+  response: ServerResponse,
+  resourcePath: string
+): Promise<Srv4DevHttpResponse> {
+  return new Promise((resolve) => {
+    response.writeHead(404, { "Content-Type": "text/plain" });
+    response.write("Not Found!\n\n");
+    response.write(`${resourcePath}\n`);
+    response.end();
+
+    return resolve({
+      status: 404,
+      resource: resourcePath,
+    } as Srv4DevHttpResponse);
+  });
 }
 
 function getHandlerStaticFiles(webRoot: string): RequestListener {
@@ -34,15 +56,15 @@ function getHandlerStaticFiles(webRoot: string): RequestListener {
     response: ServerResponse
   ): Promise<void> => {
     return new Promise((resolve) => {
-      logger.debug(response);
-
-      getRessourcePathByUrl(webRoot, request.url)
+      getResourcePathByUrl(webRoot, request.url)
         .then(
-          (ressourcePath) => {
-            logger.debug(ressourcePath);
+          (resourcePath) => {
+            logger.debug(resourcePath);
           },
           (err) => {
-            logger.debug(err);
+            if (err instanceof Srv4DevHttpResourceNotFoundError)
+              return createResponseRessourceNotFound(response, err.resource);
+            throw err;
           }
         )
         .catch((err) => {
@@ -55,7 +77,7 @@ function getHandlerStaticFiles(webRoot: string): RequestListener {
   };
 }
 
-function getRessourcePathByUrl(
+function getResourcePathByUrl(
   webRoot: string,
   url: string | undefined
 ): Promise<string> {
@@ -66,15 +88,13 @@ function getRessourcePathByUrl(
       .then((statObject) => {
         if (statObject.isDirectory() === true)
           return resolve(
-            getRessourcePathByUrl(webRoot, join(uri, "index.html"))
+            getResourcePathByUrl(webRoot, join(uri, "index.html"))
           );
         else return resolve(join(webRoot, uri));
       })
       .catch((err) => {
         logger.debug(err);
-        return reject(
-          new Srv4DevHttpRessourceNotFoundError(join(webRoot, uri))
-        );
+        return reject(new Srv4DevHttpResourceNotFoundError(join(webRoot, uri)));
       });
   });
 }
