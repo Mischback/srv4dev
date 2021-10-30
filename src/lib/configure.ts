@@ -9,6 +9,7 @@ import { logger } from "./logging";
 export interface Srv4DevConfig {
   httpAddress: string;
   httpPort: number;
+  webRoot: string;
 }
 
 /**
@@ -44,6 +45,13 @@ export const cmdLineOptions: Config = {
     default: false,
     description: "Disable all logging messages",
     key: "q",
+    required: false,
+  },
+  webRoot: {
+    args: 1,
+    default: false,
+    description: "Serve files from this directory as root",
+    key: "w",
     required: false,
   },
 };
@@ -97,9 +105,19 @@ export function getConfig(argv: string[]): Promise<Srv4DevConfig> {
       logger.debug(`Port: "${tmpPort}"`);
     }
 
+    let tmpWebRoot: string;
+    if (cmdLineParams.webRoot === false) {
+      tmpWebRoot = "./";
+      logger.info(`No webRoot specified, using "${tmpWebRoot}"`);
+    } else {
+      tmpWebRoot = cmdLineParams.webRoot as string;
+      logger.debug(`WebRoot: "${tmpWebRoot}"`);
+    }
+
     return resolve({
       httpAddress: tmpAddress,
       httpPort: tmpPort,
+      webRoot: tmpWebRoot,
     } as Srv4DevConfig);
   });
 }
