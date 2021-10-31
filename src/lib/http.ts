@@ -120,6 +120,9 @@ function getHandlerStaticFiles(webRoot: string): RequestListener {
             throw err;
           }
         )
+        .then((response) => {
+          logger.info(`${response.status.toString()}: ${response.resource}`);
+        })
         .catch((err) => {
           logger.debug(err);
         })
@@ -145,8 +148,7 @@ function getResourcePathByUrl(
           );
         else return resolve(join(webRoot, uri));
       })
-      .catch((err) => {
-        logger.debug(err);
+      .catch(() => {
         return reject(new Srv4DevHttpResourceNotFoundError(join(webRoot, uri)));
       });
   });
