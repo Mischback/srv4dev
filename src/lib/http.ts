@@ -103,7 +103,7 @@ function createResponseRessourceNotFound(
   });
 }
 
-function getHandlerStaticFiles(webRoot: string): RequestListener {
+export function getHandlerStaticFiles(webRoot: string): RequestListener {
   return (
     request: IncomingMessage,
     response: ServerResponse

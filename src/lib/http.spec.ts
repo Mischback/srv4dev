@@ -7,7 +7,11 @@ import { beforeAll, describe, expect, it, jest } from "@jest/globals";
 jest.mock("http");
 
 /* import the subject under test (SUT) */
-import { launchHttpServer, Srv4DevHttpError } from "./http";
+import {
+  getHandlerStaticFiles,
+  launchHttpServer,
+  Srv4DevHttpError,
+} from "./http";
 
 /* additional imports */
 import { createServer } from "http";
@@ -71,5 +75,11 @@ describe("launchHttpServer()...", () => {
     return launchHttpServer({} as Srv4DevConfig).catch((err) => {
       expect(err).toBeInstanceOf(Srv4DevHttpError);
     });
+  });
+});
+
+describe("getHandlerStaticFiles()...", () => {
+  it("...returns something truthy", () => {
+    expect(getHandlerStaticFiles("foobar")).toBeTruthy();
   });
 });
