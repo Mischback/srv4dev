@@ -41,6 +41,7 @@ describe("launchHttpServer()...", () => {
     const testConfiguration: Srv4DevConfig = {
       httpAddress: testAddress,
       httpPort: testPort,
+      nodemonConfigFile: "foo",
       webRoot: "./test/",
     };
     /* setup mocks and spies */
