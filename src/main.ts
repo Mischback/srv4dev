@@ -7,12 +7,13 @@ import {
   getConfig,
   Srv4DevConfigureError,
 } from "./lib/configure";
-import { launchHttpServer } from "./lib/http";
+import { launchHttpServer, Srv4DevHttpError } from "./lib/http";
 import {
   applyDebugConfiguration,
   logger,
   suppressLogOutput,
 } from "./lib/logging";
+import { launchNodemon, Srv4DevNodemonError } from "./lib/nodemon";
 
 /* *** INTERNAL CONSTANTS *** */
 // const EXIT_SUCCESS = 0; // sysexits.h: 0 -> successful termination
@@ -55,15 +56,32 @@ export function srv4devMain(argv: string[]): Promise<number> {
 
     /* The actual payload starts here */
     getConfig(argv)
-      .then((config) => {
-        return launchHttpServer(config);
+      .then(async (config) => {
+        await launchHttpServer(config);
+        await launchNodemon(config.nodemonConfigFile);
+        return Promise.resolve();
+      })
+      .then(() => {
+        logger.info("Successfully started nodemon and http server");
       })
       .catch((err) => {
         /* handle "known" errors */
         if (err instanceof Srv4DevConfigureError) {
           logger.error(err.message);
-          logger.fatal("Could not determine configuration for ImP!");
+          logger.fatal("Could not determine configuration for Srv4Dev!");
           return reject(EXIT_CONFIG_ERROR);
+        }
+
+        if (err instanceof Srv4DevHttpError) {
+          logger.error(err.message);
+          logger.fatal("Could not launch http server!");
+          return reject(EXIT_INTERNAL_ERROR);
+        }
+
+        if (err instanceof Srv4DevNodemonError) {
+          logger.error(err.message);
+          logger.fatal("Could not launch nodemon!");
+          return reject(EXIT_INTERNAL_ERROR);
         }
 
         /* general error handler */
