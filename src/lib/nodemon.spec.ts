@@ -2,15 +2,12 @@
 
 /* test specific imports */
 import { beforeAll, describe, expect, it, jest } from "@jest/globals";
-// import { mocked } from "ts-jest/utils";
 
 jest.mock("nodemon");
 jest.mock("fs");
 
-// import nodemon from "nodemon";
 import { readFileSync } from "fs";
 
-// import nodemon from "nodemon";
 import { launchNodemon, Srv4DevNodemonError } from "./nodemon";
 
 import { logger } from "./logging";
@@ -85,41 +82,3 @@ describe("readNodemonConfigFile()...", () => {
     });
   });
 });
-
-// describe("launchNodemon()...", () => {
-//   it("...launches nodemon", () => {
-//     (readFileSync as jest.Mock).mockReturnValue("");
-//     JSON.parse = jest.fn(() => {
-//       return {
-//         exec: "pwd",
-//         ext: "ts",
-//         verbose: true,
-//         watch: ["src"],
-//       };
-//     });
-//     // (nodemon as any as jest.Mock).mockImplementation(() => {
-//     //   console.log("foobar");
-//     //   return nodemon; });
-//     // console.log(nodemon);
-//     const mockedNodemon = mocked(nodemon, true);
-//     const nodemonOnSpy = jest.spyOn(nodemon, "on");
-
-//     /* despite of all the mocking in place, the test is actually still totally
-//      * fucked up.
-//      * Because of mocking "nodemon", the attached "on"-handlers can not be
-//      * called and throw another error in nodemon.ts.
-//      * However, the "catch()"-block verifies, that "nodemon" is actually called.
-//      */
-//     return launchNodemon("foo")
-//       .then((retVal) => {
-//         expect(retVal).toBe(true);
-//         expect(mockedNodemon).toHaveBeenCalled();
-//         expect(nodemonOnSpy).toBeCalledTimes(4);
-//       })
-//       .catch((err) => {
-//         expect(mockedNodemon).toHaveBeenCalledTimes(1);
-//         expect(err).toBeInstanceOf(Srv4DevNodemonError);
-//         // expect(nodemonOnSpy).toThrow();
-//       });
-//   });
-// });
