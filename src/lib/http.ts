@@ -20,6 +20,11 @@ interface Srv4DevHttpResponse {
   resource: string;
 }
 
+/**
+ * Lookup table to determine the mime type by file extension
+ *
+ * @see {@link createResponseOk}
+ */
 const mimeTypes: { [id: string]: string } = {
   ".html": "text/html",
   ".js": "text/javascript",
@@ -55,6 +60,19 @@ class Srv4DevHttpResourceNotFoundError extends Srv4DevHttpError {
   }
 }
 
+/**
+ * Provide a HTTP 200 response
+ *
+ * @param response - The {@link ServerResponse} object to write to
+ * @param resourcePath - The resource as determined by {@link getResourcePathByUrl}
+ * @returns A Promise, resolving to an instance of {@link Srv4DevHttpResponse}
+ *
+ * The function determines the correct MIME type by evaluating the file extension
+ * by the lookup table in {@link mimeTypes} and then uses {@link createReadStream} to
+ * actually open the file.
+ * If there is an error during file streaming, the Promise is rejected with an
+ * instance of {@link Srv4DevHttpFileError}.
+ */
 function createResponseOk(
   response: ServerResponse,
   resourcePath: string
@@ -86,6 +104,15 @@ function createResponseOk(
   });
 }
 
+/**
+ * Provide a HTTP 404 response
+ *
+ * @param response - The {@link ServerResponse} object to write to
+ * @param resourcePath - The resource as determined by {@link getResourcePathByUrl}
+ * @returns A Promise, resolving to an instance of {@link Srv4DevHttpResponse}
+ *
+ * The function provides the complete HTTP-conform response, including headers.
+ */
 function createResponseRessourceNotFound(
   response: ServerResponse,
   resourcePath: string
@@ -103,6 +130,18 @@ function createResponseRessourceNotFound(
   });
 }
 
+/**
+ * Provide a node/http-conform {@link RequestListener} with its internal logic
+ *
+ * @param webRoot - The root to serve from
+ * @returns A {@link RequestListener}
+ *
+ * The returned function provides the logic to handle the requests to a static,
+ * file system based resource.
+ * 1) Determine the resource
+ * 2) Provide 200/404 http response
+ * 3) Log the operation
+ */
 export function getHandlerStaticFiles(webRoot: string): RequestListener {
   return (
     request: IncomingMessage,
@@ -133,6 +172,20 @@ export function getHandlerStaticFiles(webRoot: string): RequestListener {
   };
 }
 
+/**
+ * Determine the filesystem resource as specified by requested URL
+ *
+ * @param webRoot - The directory to be used as root for the server
+ * @param url - The requested URL
+ * @returns A Promise, resolving to the path/filename of the requested resource
+ *
+ * The function tries to access the requested resource relative to the specified
+ * "webRoot". If it is accessible, the path/filename are returned.
+ * If the identified resource is a directory, the function is called recursively
+ * with an appended "index.html".
+ * If the resource can not be accessed, a {@link Srv4DevHttpResourceNotFoundError}
+ * is returned / rejected.
+ */
 function getResourcePathByUrl(
   webRoot: string,
   url: string | undefined
@@ -154,6 +207,12 @@ function getResourcePathByUrl(
   });
 }
 
+/**
+ * Launch the http server on a given address and port.
+ *
+ * @param config - The {@link Srv4DevConfig} item
+ * @returns A Promise, resolving to the {@link Server} instance
+ */
 export function launchHttpServer(config: Srv4DevConfig): Promise<Server> {
   return new Promise((resolve, reject) => {
     try {
