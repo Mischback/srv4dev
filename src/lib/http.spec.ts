@@ -115,4 +115,39 @@ describe("getHandlerStaticFiles()...", () => {
     // eslint-disable-next-line @typescript-eslint/unbound-method
     expect(mockResponse.end).toHaveBeenCalledTimes(1);
   });
+
+  it("...getResourcePathByUrl() appends index.html if the url is a folder", async () => {
+    const testUrl = "/testing/";
+    const testWebRoot = "webRoot";
+
+    const expectedResource = join(testWebRoot, testUrl, "index.html");
+
+    /* setup mocks and spies */
+    (lstat as jest.Mock).mockRejectedValue("MOCK lstat()");
+    (lstat as jest.Mock).mockResolvedValueOnce({
+      isDirectory: jest.fn(() => {
+        return true;
+      }),
+    });
+    const mockRequest = {
+      url: testUrl,
+    } as IncomingMessage;
+    const mockResponse = {
+      end: jest.fn(),
+      write: jest.fn(),
+      writeHead: jest.fn(),
+    } as any as ServerResponse;
+
+    const handler = getHandlerStaticFiles(testWebRoot);
+
+    // eslint-disable-next-line @typescript-eslint/await-thenable
+    const retVal = await handler(mockRequest, mockResponse);
+    expect(retVal).toBe(undefined);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockResponse.writeHead).toHaveBeenCalledTimes(1);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockResponse.write).toHaveBeenCalledWith(`${expectedResource}\n`);
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    expect(mockResponse.end).toHaveBeenCalledTimes(1);
+  });
 });
