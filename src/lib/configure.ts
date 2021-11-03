@@ -10,6 +10,7 @@ export interface Srv4DevConfig {
   httpAddress: string;
   httpPort: number;
   webRoot: string;
+  nodemonConfigFile: string;
 }
 
 /**
@@ -31,6 +32,13 @@ export const cmdLineOptions: Config = {
     default: false,
     description: "Flag to activate debug mode",
     key: "d",
+    required: false,
+  },
+  nodemonConfig: {
+    args: 1,
+    default: false,
+    description: "Config file for nodemon",
+    key: "c",
     required: false,
   },
   port: {
@@ -86,6 +94,17 @@ export function getConfig(argv: string[]): Promise<Srv4DevConfig> {
       logger.debug(`Address: "${tmpAddress}"`);
     }
 
+    let tmpNodemonConfigFile: string;
+    if (cmdLineParams.nodemonConfig === false) {
+      tmpNodemonConfigFile = "nodemon.json";
+      logger.info(
+        `No nodemon config file specified, using "${tmpNodemonConfigFile}"`
+      );
+    } else {
+      tmpNodemonConfigFile = cmdLineParams.nodemonConfig as string;
+      logger.debug(`Nodemon config: "${tmpNodemonConfigFile}"`);
+    }
+
     let tmpPort: number;
     if (cmdLineParams.port === false) {
       tmpPort = 8000;
@@ -118,6 +137,7 @@ export function getConfig(argv: string[]): Promise<Srv4DevConfig> {
       httpAddress: tmpAddress,
       httpPort: tmpPort,
       webRoot: tmpWebRoot,
+      nodemonConfigFile: tmpNodemonConfigFile,
     } as Srv4DevConfig);
   });
 }
