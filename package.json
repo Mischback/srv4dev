@@ -1,7 +1,7 @@
 {
   "name": "@mischback/srv4dev",
   "description": "Minimal HTTP development server with nodemon integration",
-  "version": "0.0.1-alpha-1",
+  "version": "1.0.0",
   "main": "dist/index.js",
   "bin": {
     "srv4dev": "dist/cli.js"
