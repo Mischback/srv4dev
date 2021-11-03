@@ -1,4 +1,18 @@
 {
+  "name": "@mischback/srv4dev",
+  "description": "Minimal HTTP development server with nodemon integration",
+  "version": "0.0.1-alpha-1",
+  "main": "dist/index.js",
+  "bin": {
+    "srv4dev": "dist/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mischback/srv4dev.git"
+  },
+  "author": "Mischback",
+  "license": "MIT",
+  "homepage": "https://github.com/Mischback/srv4dev/#readme",
   "devDependencies": {
     "@types/jest": "^27.0.2",
     "@types/node": "^16.11.6",

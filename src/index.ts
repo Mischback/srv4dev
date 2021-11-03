@@ -1,9 +1,10 @@
-#!/usr/bin/env node
-
 // SPDX-License-Identifier: MIT
 
-import { srv4devMain } from "./main";
-
-srv4devMain(process.argv).catch((errno: number) => {
-  process.exit(errno);
-});
+export { srv4devMain } from "./main";
+export { Srv4DevError } from "./lib/errors";
+export {
+  launchHttpServer,
+  Srv4DevHttpError,
+  getHandlerStaticFiles,
+} from "./lib/http";
+export { launchNodemon, Srv4DevNodemonError } from "./lib/nodemon";
