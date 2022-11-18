@@ -1,4 +1,6 @@
+// SPDX-FileCopyrightText: 2022 Mischback
 // SPDX-License-Identifier: MIT
+// SPDX-FileType: SOURCE
 
 export { srv4devMain } from "./main";
 export { Srv4DevError } from "./lib/errors";

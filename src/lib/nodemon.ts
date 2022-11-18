@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2022 Mischback
+// SPDX-License-Identifier: MIT
+// SPDX-FileType: SOURCE
+
 /* Library imports */
 import { readFileSync } from "fs";
 import nodemon from "nodemon";

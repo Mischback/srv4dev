@@ -1,4 +1,6 @@
+// SPDX-FileCopyrightText: 2022 Mischback
 // SPDX-License-Identifier: MIT
+// SPDX-FileType: SOURCE
 
 import { getopt } from "stdio";
 import { Config } from "stdio/dist/getopt";
