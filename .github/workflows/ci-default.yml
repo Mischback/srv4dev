@@ -45,6 +45,14 @@ jobs:
           path-to-lcov: ./src/.coverage/lcov.info
           parallel: true
 
+  dependabot:
+    needs: testing
+    uses: mischback/development-meta/.github/workflows/dependabot-auto-approve.yml@main
+    with:
+      pr_url: ${{ github.event.pull_request.html_url }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+
   finish:
     needs: testing
     runs-on: ubuntu-latest
