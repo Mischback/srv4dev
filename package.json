@@ -1,7 +1,7 @@
 {
   "name": "@mischback/srv4dev",
   "description": "Minimal HTTP development server with nodemon integration",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "dist/index.js",
   "bin": {
     "srv4dev": "dist/cli.js"
@@ -15,15 +15,15 @@
   "homepage": "https://github.com/Mischback/srv4dev/#readme",
   "devDependencies": {
     "@types/jest": "^27.0.2",
-    "@types/node": "^16.11.6",
+    "@types/node": "^18.11.2",
     "@types/nodemon": "^1.19.1",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
-    "clean-publish": "^3.4.2",
+    "clean-publish": "^4.0.1",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "jest": "^27.2.5",
-    "lint-staged": "^11.2.3",
+    "lint-staged": "^13.0.3",
     "prettier": "^2.4.1",
     "simple-git-hooks": "^2.6.1",
     "ts-jest": "^27.0.7",

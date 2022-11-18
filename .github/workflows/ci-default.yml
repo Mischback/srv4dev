@@ -3,16 +3,18 @@ name: CI default branch
 on:
   push:
     branches: [development]
+  pull_request:
+    branches: [development]
 
 jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Run linters
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
           cache: "npm"
       - run: npm ci
       - run: make ci/linting
@@ -22,14 +24,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [14.x, 16.x]
+        node-version: [14.x, 16.x, 18.x]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: OS ${{ matrix.os }} - Node ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
@@ -42,6 +44,14 @@ jobs:
           flag-name: OS-${{ matrix.os }}_Node-${{ matrix.node-version }}
           path-to-lcov: ./src/.coverage/lcov.info
           parallel: true
+
+  dependabot:
+    needs: testing
+    uses: mischback/development-meta/.github/workflows/dependabot-auto-approve.yml@main
+    with:
+      pr_url: ${{ github.event.pull_request.html_url }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   finish:
     needs: testing
