@@ -1,4 +1,6 @@
+// SPDX-FileCopyrightText: 2022 Mischback
 // SPDX-License-Identifier: MIT
+// SPDX-FileType: SOURCE
 
 import { createReadStream } from "fs";
 import { lstat } from "fs/promises";
