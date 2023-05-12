@@ -19,6 +19,14 @@ integrated.
 **Please note** that this package is by no means more than a tiny development
 server. **DO NOT USE** this in any _production environment_.
 
+## Out of Maintanence
+
+_srv4dev_ is **out of maintenance** until further notice.
+
+There will be no additional features, and **no bugfixes**. If you're interested
+in taking over this project, you may use GitHub to get in touch (e.g. by
+posting an issue in this repository).
+
 ## Installation
 
 ```bash
