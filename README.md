@@ -3,7 +3,7 @@
 ![npm (scoped)](https://img.shields.io/npm/v/@mischback/srv4dev?style=flat)
 
 ![GitHub package.json version (development)](https://img.shields.io/github/package-json/v/mischback/srv4dev/development?style=flat)
-![GitHub branch checks state](https://img.shields.io/github/workflow/status/mischback/srv4dev/CI%20default%20branch?style=flat&logo=github)
+![GitHub branch checks state](https://img.shields.io/github/actions/workflow/status/mischback/srv4dev/ci-default.yml?branch=development&style=flat&logo=github)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat&logo=prettier)](https://github.com/prettier/prettier)
 ![GitHub License](https://img.shields.io/github/license/mischback/srv4dev?style=flat)
 
@@ -18,6 +18,14 @@ integrated.
 
 **Please note** that this package is by no means more than a tiny development
 server. **DO NOT USE** this in any _production environment_.
+
+## Out of Maintanence
+
+_srv4dev_ is **out of maintenance** until further notice.
+
+There will be no additional features, and **no bugfixes**. If you're interested
+in taking over this project, you may use GitHub to get in touch (e.g. by
+posting an issue in this repository).
 
 ## Installation
 
